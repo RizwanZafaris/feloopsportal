@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ─── FELO Brand: Warm, low-saturation palette ───────────────── */
+    --background: 40 20% 98%;
+    --foreground: 30 10% 15%;
+
+    --card: 40 18% 97%;
+    --card-foreground: 30 10% 15%;
+
+    --popover: 40 18% 97%;
+    --popover-foreground: 30 10% 15%;
+
+    /* Primary: emerald/sage */
+    --primary: 145 30% 42%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary: warm sand */
+    --secondary: 35 20% 88%;
+    --secondary-foreground: 30 10% 15%;
+
+    /* Muted: warm gray */
+    --muted: 35 12% 92%;
+    --muted-foreground: 30 6% 45%;
+
+    /* Accent: warm amber */
+    --accent: 38 72% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 35 15% 85%;
+    --input: 35 15% 85%;
+    --ring: 145 30% 42%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 30 10% 8%;
+    --foreground: 40 12% 92%;
+
+    --card: 30 10% 10%;
+    --card-foreground: 40 12% 92%;
+
+    --popover: 30 10% 10%;
+    --popover-foreground: 40 12% 92%;
+
+    --primary: 145 30% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 35 12% 18%;
+    --secondary-foreground: 40 12% 92%;
+
+    --muted: 30 8% 16%;
+    --muted-foreground: 35 8% 55%;
+
+    --accent: 38 72% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 55% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 8% 20%;
+    --input: 30 8% 20%;
+    --ring: 145 30% 48%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+}
+
+@layer components {
+  .felo-card {
+    @apply rounded-xl border bg-card p-6 shadow-sm transition-shadow hover:shadow-md;
+  }
+
+  .felo-stat {
+    @apply text-3xl font-bold tracking-tight text-foreground;
+  }
+
+  .felo-label {
+    @apply text-xs font-medium uppercase tracking-wider text-muted-foreground;
+  }
+
+  .felo-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .felo-section {
+    @apply mb-6 flex items-center justify-between;
+  }
+
+  .felo-input {
+    @apply rounded-lg border bg-background px-3 py-2 text-sm shadow-sm transition-colors
+           focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.5);
+  }
+}
