@@ -166,9 +166,11 @@ export function requiresTwoPersonApproval(
     case 'refund':
       return (amount || 0) >= TWO_PERSON_THRESHOLDS.refundAmount;
     case 'fx_override':
+      return TWO_PERSON_THRESHOLDS.fxOverride;
     case 'tier_override':
+      return TWO_PERSON_THRESHOLDS.tierOverride;
     case 'prompt_activation':
-      return TWO_PERSON_THRESHOLDS[type];
+      return TWO_PERSON_THRESHOLDS.promptActivation;
     default:
       return false;
   }

@@ -13,8 +13,13 @@ export function generateChallenge(): Uint8Array {
 /**
  * Base64URL encode
  */
-function base64urlEncode(buffer: ArrayBuffer): string {
-  const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+function base64urlEncode(buffer: ArrayBuffer | Uint8Array): string {
+  const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
+  let str = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    str += String.fromCharCode(bytes[i]);
+  }
+  const base64 = btoa(str);
   return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
@@ -40,10 +45,10 @@ export async function registerCredential(email: string): Promise<{
     const challenge = generateChallenge();
 
     const publicKeyOptions: PublicKeyCredentialCreationOptions = {
-      challenge,
+      challenge: challenge.buffer.slice(challenge.byteOffset, challenge.byteOffset + challenge.byteLength) as ArrayBuffer,
       rp: { name: RP_NAME, id: RP_ID },
       user: {
-        id: new TextEncoder().encode(email),
+        id: new TextEncoder().encode(email).buffer.slice(0) as ArrayBuffer,
         name: email,
         displayName: email,
       },
@@ -60,7 +65,9 @@ export async function registerCredential(email: string): Promise<{
       timeout: 60000,
     };
 
-    const credential = await navigator.credentials.create({ publicKey: publicKeyOptions });
+    const credential = (await navigator.credentials.create({
+      publicKey: publicKeyOptions,
+    })) as PublicKeyCredential | null;
     if (!credential) {
       return { success: false, error: 'Credential creation was cancelled' };
     }
@@ -85,7 +92,7 @@ export async function authenticateCredential(): Promise<{
     const challenge = generateChallenge();
 
     const publicKeyOptions: PublicKeyCredentialRequestOptions = {
-      challenge,
+      challenge: challenge.buffer.slice(challenge.byteOffset, challenge.byteOffset + challenge.byteLength) as ArrayBuffer,
       rpId: RP_ID,
       userVerification: 'required',
       timeout: 60000,
@@ -110,9 +117,10 @@ export async function authenticateCredential(): Promise<{
  * Generate a mock JWT token for development
  */
 function generateMockToken(): string {
-  const header = base64urlEncode(new TextEncoder().encode(JSON.stringify({ alg: 'none', typ: 'JWT' })));
+  const enc = new TextEncoder();
+  const header = base64urlEncode(enc.encode(JSON.stringify({ alg: 'none', typ: 'JWT' })));
   const payload = base64urlEncode(
-    new TextEncoder().encode(
+    enc.encode(
       JSON.stringify({
         sub: 'admin-1',
         email: 'admin@felo.io',

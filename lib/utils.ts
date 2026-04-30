@@ -99,7 +99,7 @@ export function generateConfirmId(): string {
  */
 export function getDiff<T extends Record<string, unknown>>(before: T, after: T): Record<string, { old: unknown; new: unknown }> {
   const diff: Record<string, { old: unknown; new: unknown }> = {};
-  const allKeys = new Set([...Object.keys(before), ...Object.keys(after)]);
+  const allKeys = Array.from(new Set([...Object.keys(before), ...Object.keys(after)]));
   for (const key of allKeys) {
     if (JSON.stringify(before[key]) !== JSON.stringify(after[key])) {
       diff[key] = { old: before[key], new: after[key] };
