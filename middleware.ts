@@ -7,8 +7,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check for auth token
-  const token = request.cookies.get('admin-token')?.value || request.headers.get('x-admin-token');
+  // Check for auth token (Bearer format for Supabase JWT)
+  const authHeader = request.headers.get('authorization');
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : request.cookies.get('admin-token')?.value;
 
   // In development, allow through without strict auth
   if (process.env.NODE_ENV === 'development') {

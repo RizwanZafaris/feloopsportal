@@ -36,7 +36,7 @@ import type {
 
 // ─── Axios Instance ────────────────────────────────────────────────
 
-const ADMIN_API_BASE = process.env.ADMIN_API_BASE || 'http://localhost:3001';
+const ADMIN_API_BASE = process.env.NEXT_PUBLIC_ADMIN_API_BASE || 'https://appbackendfelo-production.up.railway.app/v1';
 
 export const api: AxiosInstance = axios.create({
   baseURL: ADMIN_API_BASE,
@@ -44,12 +44,12 @@ export const api: AxiosInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Request interceptor — attach admin JWT
+// Request interceptor — attach Bearer token (Supabase JWT format)
 api.interceptors.request.use(
   (config) => {
     const session = getSession();
     if (session?.token) {
-      config.headers['x-admin-token'] = session.token;
+      config.headers['Authorization'] = `Bearer ${session.token}`;
     }
     return config;
   },
