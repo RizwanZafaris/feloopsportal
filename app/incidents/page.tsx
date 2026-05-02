@@ -67,7 +67,7 @@ export default function IncidentsPage() {
     createMutation.mutate({
       title: formData.get('title') as string,
       description: formData.get('description') as string,
-      severity: formData.get('severity') as string,
+      severity: formData.get('severity') as 'critical' | 'high' | 'medium' | 'low',
       affectedServices: (formData.get('services') as string).split(',').map((s) => s.trim()).filter(Boolean),
     });
   };

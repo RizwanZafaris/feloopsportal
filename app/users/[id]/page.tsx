@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
-import { getUser, forceLogoutUser, softDeleteUser, logPiiAccess } from '@/lib/api';
+import { getUser, forceLogoutUser, softDeleteUser, logPiiAccess, getUserActivityFeed } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,9 +12,98 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { generateConfirmId, formatDate, formatCurrency } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import * as React from 'react';
-import { User, LogOut, Trash2, Shield, Mail, Phone, MapPin, Calendar } from 'lucide-react';
+import { User, LogOut, Trash2, Shield, Mail, Phone, MapPin, Calendar, Target, Split, Wallet, PiggyBank, Send, MessageSquare, UserCheck, TrendingUp, Flag, Activity, CheckCircle } from 'lucide-react';
 
 const TIER_COLORS: Record<string, string> = { free: 'secondary', basic: 'info', pro: 'success', elite: 'warning' };
+
+const ACTIVITY_ICON_MAP: Record<string, React.ReactNode> = {
+  goal_created: <Target className="h-4 w-4 text-felo-emerald-500" />,
+  goal_contributed: <TrendingUp className="h-4 w-4 text-felo-sage-500" />,
+  goal_completed: <CheckCircle className="h-4 w-4 text-felo-emerald-500" />,
+  split_created: <Split className="h-4 w-4 text-felo-amber-500" />,
+  split_paid: <Wallet className="h-4 w-4 text-felo-sage-500" />,
+  split_settled: <CheckCircle className="h-4 w-4 text-felo-emerald-500" />,
+  budget_created: <PiggyBank className="h-4 w-4 text-felo-amber-500" />,
+  budget_alert: <Flag className="h-4 w-4 text-destructive" />,
+  envelope_allocated: <Wallet className="h-4 w-4 text-felo-sage-500" />,
+  envelope_spent: <Wallet className="h-4 w-4 text-destructive" />,
+  transaction_made: <Send className="h-4 w-4 text-felo-sage-500" />,
+  remittance_sent: <Send className="h-4 w-4 text-felo-emerald-500" />,
+  remittance_received: <Send className="h-4 w-4 text-felo-amber-500" />,
+  coach_chat: <MessageSquare className="h-4 w-4 text-felo-amber-500" />,
+  account_linked: <UserCheck className="h-4 w-4 text-felo-emerald-500" />,
+  mfa_enabled: <Shield className="h-4 w-4 text-felo-emerald-500" />,
+  tier_changed: <TrendingUp className="h-4 w-4 text-felo-amber-500" />,
+};
+
+function UserActivityFeed({ userId }: { userId: string }) {
+  const { data: activity, isLoading } = useQuery({
+    queryKey: ['userActivity', userId],
+    queryFn: () => getUserActivityFeed(userId, 50),
+  });
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Recent Activity</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-12 w-full" />
+          ))}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!activity || activity.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Recent Activity</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">No recent activity for this user.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base flex items-center gap-2">
+          <Activity className="h-4 w-4" />
+          Recent Activity
+        </CardTitle>
+        <CardDescription>Last {activity.length} events across all modules</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {activity.map((item) => (
+          <div key={item.id} className="flex items-start gap-3 rounded-lg border p-3">
+            <div className="mt-0.5 shrink-0">
+              {ACTIVITY_ICON_MAP[item.activityType] || <Activity className="h-4 w-4 text-muted-foreground" />}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium">{item.title}</p>
+                <span className="text-xs text-muted-foreground">{formatDate(item.createdAt, { relative: true })}</span>
+              </div>
+              {item.description && <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>}
+              {item.amountMinor !== null && item.currency && (
+                <p className="text-xs font-medium mt-0.5">
+                  {formatCurrency(item.amountMinor, item.currency)}
+                </p>
+              )}
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
 
 export default function UserDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -163,17 +252,9 @@ export default function UserDetailPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="activity">
-          <Card>
-            <CardHeader>
-              <CardTitle>User Activity Timeline</CardTitle>
-              <CardDescription>Recent events for this user (integrate with traceability API)</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Connect to <code>/admin/traceability/user/{id}</code> for full timeline.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
+      <TabsContent value="activity" className="space-y-4">
+        <UserActivityFeed userId={id} />
+      </TabsContent>
 
         <TabsContent value="actions">
           <Card>

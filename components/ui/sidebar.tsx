@@ -31,6 +31,9 @@ import {
   ChevronUp,
   AlertTriangle,
   Activity,
+  Target,
+  Split,
+  PiggyBank,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -52,6 +55,9 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   FileText: <FileText className="h-4 w-4" />,
   AlertTriangle: <AlertTriangle className="h-4 w-4" />,
   Activity: <Activity className="h-4 w-4" />,
+  Target: <Target className="h-4 w-4" />,
+  Split: <Split className="h-4 w-4" />,
+  PiggyBank: <PiggyBank className="h-4 w-4" />,
 };
 
 interface NavSection {
@@ -87,11 +93,24 @@ const NAV_SECTIONS: NavSection[] = [
   },
   {
     title: 'Capture',
-    items: [{ label: 'SMS Routes', href: '/sms-routes', icon: 'MessageSquare', permission: 'sms_routes:read' }],
+    items: [
+      { label: 'SMS Routes', href: '/sms-routes', icon: 'MessageSquare', permission: 'sms_routes:read' },
+    ],
   },
   {
     title: 'Remittance',
-    items: [{ label: 'Remittance Ops', href: '/remittance-ops', icon: 'Send', permission: 'remittance:read' }],
+    items: [
+      { label: 'Remittance Ops', href: '/remittance-ops', icon: 'Send', permission: 'remittance:read' },
+    ],
+  },
+  {
+    title: 'Financial',
+    items: [
+      { label: 'Goals', href: '/goals-ops', icon: 'Target', permission: 'users:read' },
+      { label: 'Splits', href: '/splits-ops', icon: 'Split', permission: 'users:read' },
+      { label: 'Budgets', href: '/budgets-ops', icon: 'PiggyBank', permission: 'users:read' },
+      { label: 'Wallet', href: '/wallet-ops', icon: 'CreditCard', permission: 'users:read' },
+    ],
   },
   {
     title: 'Intelligence',

@@ -1,4 +1,137 @@
-// ─── Incident & Support Types ──────────────────────────────────────
+// ─── Goal Types ────────────────────────────────────────────────────
+
+export interface Goal {
+  id: string;
+  userId: string;
+  title: string;
+  description: string | null;
+  targetAmountMinor: number;
+  currentAmountMinor: number;
+  currency: string;
+  category: string;
+  deadline: string | null;
+  status: 'active' | 'completed' | 'paused' | 'cancelled';
+  autoContribute: boolean;
+  autoContributeAmountMinor: number | null;
+  autoContributeFrequency: 'daily' | 'weekly' | 'monthly' | null;
+  createdAt: string;
+  updatedAt: string;
+  completedAt: string | null;
+}
+
+// ─── Split Payment Types ───────────────────────────────────────────
+
+export interface Split {
+  id: string;
+  creatorUserId: string;
+  title: string;
+  description: string | null;
+  totalAmountMinor: number;
+  currency: string;
+  status: 'open' | 'partially_settled' | 'settled' | 'cancelled';
+  category: string;
+  createdAt: string;
+  updatedAt: string;
+  settledAt: string | null;
+  participants: SplitParticipant[];
+}
+
+export interface SplitParticipant {
+  id: string;
+  userId: string;
+  displayName: string;
+  shareAmountMinor: number;
+  paidAmountMinor: number;
+  status: 'pending' | 'paid' | 'overdue';
+  invitedAt: string;
+  paidAt: string | null;
+}
+
+// ─── Budget & Envelope Types ─────────────────────────────────────
+
+export interface Budget {
+  id: string;
+  userId: string;
+  name: string;
+  category: string;
+  limitAmountMinor: number;
+  spentAmountMinor: number;
+  currency: string;
+  period: 'weekly' | 'monthly' | 'yearly';
+  resetDay: number | null;
+  rollover: boolean;
+  alertThreshold: number;
+  status: 'active' | 'paused' | 'archived';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CashEnvelope {
+  id: string;
+  userId: string;
+  name: string;
+  allocatedAmountMinor: number;
+  spentAmountMinor: number;
+  remainingAmountMinor: number;
+  currency: string;
+  color: string;
+  icon: string;
+  isArchived: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ─── Wallet Admin Types ──────────────────────────────────────────
+
+export interface WalletBalanceAdmin {
+  userId: string;
+  displayName: string;
+  email: string;
+  totalBalanceMinor: number;
+  currency: string;
+  accountCount: number;
+  lastTransactionAt: string | null;
+}
+
+export interface WalletTransactionAdmin {
+  id: string;
+  userId: string;
+  merchant: string | null;
+  category: string | null;
+  currency: string;
+  amountMinor: number;
+  direction: 'debit' | 'credit';
+  bookedAt: string;
+  source: string;
+  status: 'pending' | 'booked' | 'reversed';
+  flags: string[];
+}
+
+export interface WalletTransactionFlag {
+  id: string;
+  transactionId: string;
+  flagType: 'suspicious' | 'duplicate' | 'manual_review' | 'compliance';
+  reason: string;
+  flaggedBy: string;
+  createdAt: string;
+  resolvedAt: string | null;
+  resolvedBy: string | null;
+}
+
+// ─── User Activity Types ─────────────────────────────────────────
+
+export interface UserActivityItem {
+  id: string;
+  userId: string;
+  activityType: 'goal_created' | 'goal_contributed' | 'goal_completed' | 'split_created' | 'split_paid' | 'split_settled' | 'budget_created' | 'budget_alert' | 'envelope_allocated' | 'envelope_spent' | 'transaction_made' | 'remittance_sent' | 'remittance_received' | 'coach_chat' | 'account_linked' | 'mfa_enabled' | 'tier_changed';
+  title: string;
+  description: string | null;
+  amountMinor: number | null;
+  currency: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
+
 
 export interface Incident {
   id: string;

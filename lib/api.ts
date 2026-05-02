@@ -40,6 +40,14 @@ import type {
   ApiHealthStatus,
   SmsRouteHealth,
   DatabaseHealth,
+  Goal,
+  Split,
+  Budget,
+  CashEnvelope,
+  WalletBalanceAdmin,
+  WalletTransactionAdmin,
+  WalletTransactionFlag,
+  UserActivityItem,
 } from '@/types/admin';
 
 // ─── Axios Instance ────────────────────────────────────────────────
@@ -104,6 +112,104 @@ async function del<T>(path: string, config?: AxiosRequestConfig): Promise<T> {
 
 export async function logPiiAccess(userId: string, purpose: string): Promise<void> {
   await post('/admin/pii-access', { userId, purpose, timestamp: new Date().toISOString() });
+}
+
+// ─── Goals Admin API ───────────────────────────────────────────────
+
+export async function listGoals(params: { userId?: string; status?: string; page?: number; limit?: number } = {}): Promise<{ items: Goal[]; total: number; page: number; totalPages: number }> {
+  return get('/admin/goals', { params });
+}
+
+export async function getGoal(id: string): Promise<Goal> {
+  return get(`/admin/goals/${id}`);
+}
+
+export async function updateGoalStatus(id: string, status: string, reason?: string): Promise<Goal> {
+  return patch(`/admin/goals/${id}/status`, { status, reason });
+}
+
+export async function overrideGoalTarget(id: string, targetAmountMinor: number, reason: string): Promise<Goal> {
+  return patch(`/admin/goals/${id}/target`, { targetAmountMinor, reason });
+}
+
+export async function getGoalProgressHistory(goalId: string): Promise<{ date: string; amountMinor: number; event: string }[]> {
+  return get(`/admin/goals/${goalId}/progress`);
+}
+
+// ─── Splits Admin API ────────────────────────────────────────────
+
+export async function listSplits(params: { userId?: string; status?: string; page?: number; limit?: number } = {}): Promise<{ items: Split[]; total: number; page: number; totalPages: number }> {
+  return get('/admin/splits', { params });
+}
+
+export async function getSplit(id: string): Promise<Split> {
+  return get(`/admin/splits/${id}`);
+}
+
+export async function forceSettleSplit(id: string, participantId: string, reason: string): Promise<Split> {
+  return post(`/admin/splits/${id}/force-settle`, { participantId, reason });
+}
+
+export async function cancelSplit(id: string, reason: string): Promise<Split> {
+  return post(`/admin/splits/${id}/cancel`, { reason });
+}
+
+export async function getSplitDisputes(): Promise<{ splitId: string; userId: string; reason: string; createdAt: string }[]> {
+  return get('/admin/splits/disputes');
+}
+
+// ─── Budgets Admin API ─────────────────────────────────────────────
+
+export async function listBudgets(params: { userId?: string; status?: string; page?: number; limit?: number } = {}): Promise<{ items: Budget[]; total: number; page: number; totalPages: number }> {
+  return get('/admin/budgets', { params });
+}
+
+export async function getBudget(id: string): Promise<Budget> {
+  return get(`/admin/budgets/${id}`);
+}
+
+export async function updateBudgetStatus(id: string, status: string, reason?: string): Promise<Budget> {
+  return patch(`/admin/budgets/${id}/status`, { status, reason });
+}
+
+export async function overrideBudgetLimit(id: string, limitAmountMinor: number, reason: string): Promise<Budget> {
+  return patch(`/admin/budgets/${id}/limit`, { limitAmountMinor, reason });
+}
+
+export async function listEnvelopes(params: { userId?: string; isArchived?: boolean; page?: number; limit?: number } = {}): Promise<{ items: CashEnvelope[]; total: number; page: number; totalPages: number }> {
+  return get('/admin/envelopes', { params });
+}
+
+export async function getEnvelope(id: string): Promise<CashEnvelope> {
+  return get(`/admin/envelopes/${id}`);
+}
+
+// ─── Wallet Admin API ──────────────────────────────────────────────
+
+export async function listWalletBalances(params: { page?: number; limit?: number; search?: string } = {}): Promise<{ items: WalletBalanceAdmin[]; total: number; page: number; totalPages: number }> {
+  return get('/admin/wallet/balances', { params });
+}
+
+export async function listWalletTransactions(params: { userId?: string; status?: string; flagged?: boolean; page?: number; limit?: number } = {}): Promise<{ items: WalletTransactionAdmin[]; total: number; page: number; totalPages: number }> {
+  return get('/admin/wallet/transactions', { params });
+}
+
+export async function flagTransaction(transactionId: string, flagType: string, reason: string): Promise<WalletTransactionFlag> {
+  return post(`/admin/wallet/transactions/${transactionId}/flag`, { flagType, reason });
+}
+
+export async function unflagTransaction(flagId: string, reason: string): Promise<void> {
+  return post(`/admin/wallet/flags/${flagId}/resolve`, { reason });
+}
+
+export async function getTransactionFlags(transactionId?: string): Promise<WalletTransactionFlag[]> {
+  return get('/admin/wallet/flags', { params: transactionId ? { transactionId } : {} });
+}
+
+// ─── User Activity Feed API ────────────────────────────────────────
+
+export async function getUserActivityFeed(userId: string, limit = 50): Promise<UserActivityItem[]> {
+  return get(`/admin/users/${userId}/activity`, { params: { limit } });
 }
 
 // ─── Incident & Support API ──────────────────────────────────────
