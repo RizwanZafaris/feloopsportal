@@ -53,6 +53,14 @@ const PROVIDER_ICONS: Record<string, any> = {
   '8b': Banknote,
   hrc_ubl: Landmark,
   habib_metro: Banknote,
+  digit9: Globe,
+  mtb: Landmark,
+  agrani_bank: Landmark,
+  brac_bank: Landmark,
+  prime_bank: Landmark,
+  standard_bank: Landmark,
+  ucb: Landmark,
+  dhaka_bank: Landmark,
 };
 
 const METHOD_COLORS: Record<string, string> = {
@@ -68,6 +76,12 @@ const AUTH_TYPE_LABELS: Record<string, string> = {
   hmac: 'HMAC Signature',
   basic: 'Basic Auth',
   otp_token: 'OTP Token',
+  jwt_basic: 'JWT + Basic',
+  pkcs7_xml: 'XML + PKCS7',
+  jwe_oauth2: 'OAuth2 + JWE',
+  aes_token: 'Token + AES',
+  soap_salted: 'SOAP + Salt',
+  dll_session: 'Session + DLL',
 };
 
 export default function RemittanceOpsPage() {

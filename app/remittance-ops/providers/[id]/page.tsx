@@ -22,6 +22,14 @@ const PROVIDER_TYPES = [
   { code: '8b', name: '8B Payout', region: 'Uzbekistan/Kazakhstan', icon: Banknote },
   { code: 'hrc_ubl', name: 'HRC (UBL)', region: 'Pakistan', icon: Landmark },
   { code: 'habib_metro', name: 'HabibMetro', region: 'Pakistan', icon: Banknote },
+  { code: 'digit9', name: 'DIGIT9', region: 'Pakistan', icon: Landmark },
+  { code: 'mtb', name: 'MTB (Mutual Trust Bank)', region: 'Bangladesh', icon: Landmark },
+  { code: 'agrani_bank', name: 'Agrani Bank', region: 'Bangladesh', icon: Landmark },
+  { code: 'brac_bank', name: 'Brac Bank', region: 'Bangladesh', icon: Landmark },
+  { code: 'prime_bank', name: 'Prime Bank', region: 'Bangladesh', icon: Landmark },
+  { code: 'standard_bank', name: 'Standard Bank', region: 'Bangladesh', icon: Landmark },
+  { code: 'ucb', name: 'UCB (United Commercial Bank)', region: 'Bangladesh', icon: Landmark },
+  { code: 'dhaka_bank', name: 'Dhaka Bank', region: 'Bangladesh', icon: Landmark },
 ];
 
 const AUTH_TYPES = [
@@ -30,6 +38,12 @@ const AUTH_TYPES = [
   { value: 'hmac', label: 'HMAC Signature' },
   { value: 'basic', label: 'Basic Auth' },
   { value: 'otp_token', label: 'OTP Token' },
+  { value: 'jwt_basic', label: 'JWT + Basic Auth' },
+  { value: 'pkcs7_xml', label: 'XML + PKCS7 Signature' },
+  { value: 'jwe_oauth2', label: 'OAuth2 + JWE' },
+  { value: 'aes_token', label: 'Token + AES' },
+  { value: 'soap_salted', label: 'SOAP + Salted Hash' },
+  { value: 'dll_session', label: 'Session + DLL' },
 ];
 
 const PAYOUT_METHODS = [
@@ -61,6 +75,14 @@ const DEFAULT_CREDENTIALS: Record<string, Record<string, string>> = {
   '8b': { serviceId: '', secretKey: '' },
   hrc_ubl: { custLoginId: '', custPassword: '', authenCode: '' },
   habib_metro: { companyId: '', agentId: '', companyName: '', preVerifiedToken: '' },
+  digit9: { username: '', password: '', clientId: '', clientSecret: '', sender: '', company: '', branch: '' },
+  mtb: { remitChannelId: '', basicAuthUsername: '', basicAuthPassword: '', requestKey: '', responseKey: '', keyOffset: '' },
+  agrani_bank: { username: '', expassword: '', excode: '' },
+  brac_bank: { basicAuthHeader: '' },
+  prime_bank: { corporateId: '', userId: '', password: '', enckey: '' },
+  standard_bank: { apiUser: '', apiKey: '', apiPass: '', apiSalt: '', productCode: '' },
+  ucb: { userId: '', password: '', transactionPassword: '', publicKey: '' },
+  dhaka_bank: { username: '', password: '', publicBaseUrl: '', secureBaseUrl: '' },
 };
 
 const DEFAULT_URLS: Record<string, string> = {
@@ -71,6 +93,14 @@ const DEFAULT_URLS: Record<string, string> = {
   '8b': 'https://secure-test.8b.world/',
   hrc_ubl: 'https://dpgwtdl.ubl.com.pk/tdl/sandbox/',
   habib_metro: 'https://api.habibmetro.com/',
+  digit9: 'https://drap-sandbox.digitnine.com',
+  mtb: 'https://uat.mutualtrustbank.com/remitapi',
+  agrani_bank: 'http://13.215.165.235:8972',
+  brac_bank: 'http://13.215.165.235:8973',
+  prime_bank: 'https://primefastlm.primebank.com.bd/primelm/primelmapi/',
+  standard_bank: 'http://118.179.131.239:8084/ws4Rms/WS',
+  ucb: 'http://103.117.142.43:1012/RTAService.svc',
+  dhaka_bank: 'https://dblremitgo.dhakabank.com.bd:8443',
 };
 
 export default function ProviderFormPage() {
@@ -128,10 +158,17 @@ export default function ProviderFormPage() {
         name: provider.name,
         baseUrl: DEFAULT_URLS[code] || '',
         credentials: DEFAULT_CREDENTIALS[code] || {},
-        authType: code === 'paymob' ? 'oauth2' : 
-                  code === 'khalti' ? 'apikey' : 
+        authType: code === 'paymob' || code === 'brac_bank' || code === 'dhaka_bank' ? 'oauth2' :
+                  code === 'digit9' ? 'oauth2' :
+                  code === 'khalti' ? 'apikey' :
                   code === 'safepay_raast' ? 'apikey' :
-                  code === 'habib_metro' ? 'otp_token' : 'hmac',
+                  code === 'habib_metro' ? 'otp_token' :
+                  code === 'mtb' ? 'jwt_basic' :
+                  code === 'agrani_bank' ? 'pkcs7_xml' :
+                  code === 'prime_bank' ? 'aes_token' :
+                  code === 'standard_bank' ? 'soap_salted' :
+                  code === 'ucb' ? 'dll_session' :
+                  'hmac',
       }));
     }
   };
@@ -267,6 +304,188 @@ export default function ProviderFormPage() {
             <div className="space-y-2">
               <Label>Pre-Verified Token (optional)</Label>
               <Input type="password" value={form.credentials.preVerifiedToken || ''} onChange={e => updateCredential('preVerifiedToken', e.target.value)} placeholder="Leave empty to use OTP flow" />
+            </div>
+          </>
+        );
+      case 'digit9':
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>Username</Label>
+              <Input value={form.credentials.username || ''} onChange={e => updateCredential('username', e.target.value)} placeholder="commerceplexltd" />
+            </div>
+            <div className="space-y-2">
+              <Label>Password</Label>
+              <Input type="password" value={form.credentials.password || ''} onChange={e => updateCredential('password', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Client ID</Label>
+              <Input value={form.credentials.clientId || ''} onChange={e => updateCredential('clientId', e.target.value)} placeholder="cdp_app" />
+            </div>
+            <div className="space-y-2">
+              <Label>Client Secret</Label>
+              <Input type="password" value={form.credentials.clientSecret || ''} onChange={e => updateCredential('clientSecret', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Sender</Label>
+              <Input value={form.credentials.sender || ''} onChange={e => updateCredential('sender', e.target.value)} placeholder="commerceplexltd" />
+            </div>
+            <div className="space-y-2">
+              <Label>Company</Label>
+              <Input value={form.credentials.company || ''} onChange={e => updateCredential('company', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Branch</Label>
+              <Input value={form.credentials.branch || ''} onChange={e => updateCredential('branch', e.target.value)} />
+            </div>
+          </>
+        );
+      case 'mtb':
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>Remit Channel ID</Label>
+              <Input type="password" value={form.credentials.remitChannelId || ''} onChange={e => updateCredential('remitChannelId', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Basic Auth Username</Label>
+              <Input value={form.credentials.basicAuthUsername || ''} onChange={e => updateCredential('basicAuthUsername', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Basic Auth Password</Label>
+              <Input type="password" value={form.credentials.basicAuthPassword || ''} onChange={e => updateCredential('basicAuthPassword', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Request Key (AES)</Label>
+              <Input type="password" value={form.credentials.requestKey || ''} onChange={e => updateCredential('requestKey', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Response Key (AES)</Label>
+              <Input type="password" value={form.credentials.responseKey || ''} onChange={e => updateCredential('responseKey', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Key Offset</Label>
+              <Input value={form.credentials.keyOffset || ''} onChange={e => updateCredential('keyOffset', e.target.value)} />
+            </div>
+          </>
+        );
+      case 'agrani_bank':
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>Username</Label>
+              <Input value={form.credentials.username || ''} onChange={e => updateCredential('username', e.target.value)} placeholder="simpaisa_2025" />
+            </div>
+            <div className="space-y-2">
+              <Label>Ex-Password</Label>
+              <Input type="password" value={form.credentials.expassword || ''} onChange={e => updateCredential('expassword', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Ex-Code (Exchange House Account)</Label>
+              <Input value={form.credentials.excode || ''} onChange={e => updateCredential('excode', e.target.value)} />
+            </div>
+          </>
+        );
+      case 'brac_bank':
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>Basic Auth Header</Label>
+              <Input value={form.credentials.basicAuthHeader || ''} onChange={e => updateCredential('basicAuthHeader', e.target.value)} placeholder="Basic U1BfVzpBYmNkMTIzNDU2Ny4=" />
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Base64 encoded username:password for OAuth2 token endpoint
+            </div>
+          </>
+        );
+      case 'prime_bank':
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>Corporate ID</Label>
+              <Input value={form.credentials.corporateId || ''} onChange={e => updateCredential('corporateId', e.target.value)} placeholder="2699591" />
+            </div>
+            <div className="space-y-2">
+              <Label>User ID</Label>
+              <Input value={form.credentials.userId || ''} onChange={e => updateCredential('userId', e.target.value)} placeholder="8670113390" />
+            </div>
+            <div className="space-y-2">
+              <Label>Password</Label>
+              <Input type="password" value={form.credentials.password || ''} onChange={e => updateCredential('password', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Encryption Key (enckey)</Label>
+              <Input type="password" value={form.credentials.enckey || ''} onChange={e => updateCredential('enckey', e.target.value)} placeholder="j@Sim91#C3Uatf&c" />
+            </div>
+          </>
+        );
+      case 'standard_bank':
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>API User</Label>
+              <Input value={form.credentials.apiUser || ''} onChange={e => updateCredential('apiUser', e.target.value)} placeholder="Simpaisa-46" />
+            </div>
+            <div className="space-y-2">
+              <Label>API Key</Label>
+              <Input type="password" value={form.credentials.apiKey || ''} onChange={e => updateCredential('apiKey', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>API Password</Label>
+              <Input type="password" value={form.credentials.apiPass || ''} onChange={e => updateCredential('apiPass', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>API Salt</Label>
+              <Input type="password" value={form.credentials.apiSalt || ''} onChange={e => updateCredential('apiSalt', e.target.value)} placeholder="Sim46@SBL" />
+            </div>
+            <div className="space-y-2">
+              <Label>Product Code</Label>
+              <Input value={form.credentials.productCode || ''} onChange={e => updateCredential('productCode', e.target.value)} placeholder="46" />
+            </div>
+          </>
+        );
+      case 'ucb':
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>User ID</Label>
+              <Input value={form.credentials.userId || ''} onChange={e => updateCredential('userId', e.target.value)} placeholder="SIMPAI-00004124" />
+            </div>
+            <div className="space-y-2">
+              <Label>Password</Label>
+              <Input type="password" value={form.credentials.password || ''} onChange={e => updateCredential('password', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Transaction Password</Label>
+              <Input type="password" value={form.credentials.transactionPassword || ''} onChange={e => updateCredential('transactionPassword', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Public Key (for DLL)</Label>
+              <Input value={form.credentials.publicKey || ''} onChange={e => updateCredential('publicKey', e.target.value)} />
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Note: UCB requires UCBCrypter.dll for production encryption
+            </div>
+          </>
+        );
+      case 'dhaka_bank':
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>Username</Label>
+              <Input value={form.credentials.username || ''} onChange={e => updateCredential('username', e.target.value)} placeholder="UATSIMPAISA" />
+            </div>
+            <div className="space-y-2">
+              <Label>Password</Label>
+              <Input type="password" value={form.credentials.password || ''} onChange={e => updateCredential('password', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Public Base URL</Label>
+              <Input value={form.credentials.publicBaseUrl || ''} onChange={e => updateCredential('publicBaseUrl', e.target.value)} placeholder="https://dblremitgo.dhakabank.com.bd:8443" />
+            </div>
+            <div className="space-y-2">
+              <Label>Secure Base URL</Label>
+              <Input value={form.credentials.secureBaseUrl || ''} onChange={e => updateCredential('secureBaseUrl', e.target.value)} placeholder="https://27.147.193.13:8443" />
             </div>
           </>
         );
