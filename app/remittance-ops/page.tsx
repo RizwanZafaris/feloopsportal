@@ -61,6 +61,8 @@ const PROVIDER_ICONS: Record<string, any> = {
   standard_bank: Landmark,
   ucb: Landmark,
   dhaka_bank: Landmark,
+  abl: Landmark,
+  faysal_bank: Landmark,
 };
 
 const METHOD_COLORS: Record<string, string> = {

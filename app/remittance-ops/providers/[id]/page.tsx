@@ -30,6 +30,8 @@ const PROVIDER_TYPES = [
   { code: 'standard_bank', name: 'Standard Bank', region: 'Bangladesh', icon: Landmark },
   { code: 'ucb', name: 'UCB (United Commercial Bank)', region: 'Bangladesh', icon: Landmark },
   { code: 'dhaka_bank', name: 'Dhaka Bank', region: 'Bangladesh', icon: Landmark },
+  { code: 'abl', name: 'ABL (Allied Bank)', region: 'Pakistan', icon: Landmark },
+  { code: 'faysal_bank', name: 'Faysal Bank (FBL IBFT)', region: 'Pakistan', icon: Landmark },
 ];
 
 const AUTH_TYPES = [
@@ -168,6 +170,8 @@ export default function ProviderFormPage() {
                   code === 'prime_bank' ? 'aes_token' :
                   code === 'standard_bank' ? 'soap_salted' :
                   code === 'ucb' ? 'dll_session' :
+                  code === 'abl' ? 'soap_salted' :
+                  code === 'faysal_bank' ? 'soap_salted' :
                   'hmac',
       }));
     }
@@ -486,6 +490,44 @@ export default function ProviderFormPage() {
             <div className="space-y-2">
               <Label>Secure Base URL</Label>
               <Input value={form.credentials.secureBaseUrl || ''} onChange={e => updateCredential('secureBaseUrl', e.target.value)} placeholder="https://27.147.193.13:8443" />
+            </div>
+          </>
+        );
+      case 'abl':
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>Agent Code</Label>
+              <Input value={form.credentials.agentCode || ''} onChange={e => updateCredential('agentCode', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Password</Label>
+              <Input type="password" value={form.credentials.password || ''} onChange={e => updateCredential('password', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>User ID</Label>
+              <Input value={form.credentials.userId || ''} onChange={e => updateCredential('userId', e.target.value)} />
+            </div>
+          </>
+        );
+      case 'faysal_bank':
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>Username</Label>
+              <Input value={form.credentials.username || ''} onChange={e => updateCredential('username', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Password</Label>
+              <Input type="password" value={form.credentials.password || ''} onChange={e => updateCredential('password', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>API Key</Label>
+              <Input type="password" value={form.credentials.apiKey || ''} onChange={e => updateCredential('apiKey', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Pre-Shared Key (for token generation)</Label>
+              <Input value={form.credentials.preSharedKey || ''} onChange={e => updateCredential('preSharedKey', e.target.value)} placeholder="TEST (for sandbox)" />
             </div>
           </>
         );
