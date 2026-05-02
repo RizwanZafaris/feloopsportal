@@ -32,6 +32,14 @@ import type {
   MrrWaterfall,
   TraceabilityEvent,
   TransactionLineage,
+  Incident,
+  IncidentTimelineEvent,
+  SupportTicket,
+  SupportTicketMessage,
+  ProviderHealth,
+  ApiHealthStatus,
+  SmsRouteHealth,
+  DatabaseHealth,
 } from '@/types/admin';
 
 // ─── Axios Instance ────────────────────────────────────────────────
@@ -96,6 +104,78 @@ async function del<T>(path: string, config?: AxiosRequestConfig): Promise<T> {
 
 export async function logPiiAccess(userId: string, purpose: string): Promise<void> {
   await post('/admin/pii-access', { userId, purpose, timestamp: new Date().toISOString() });
+}
+
+// ─── Incident & Support API ──────────────────────────────────────
+
+export async function listIncidents(status?: string, severity?: string): Promise<Incident[]> {
+  return get('/admin/incidents', { params: { status, severity } });
+}
+
+export async function getIncident(id: string): Promise<Incident> {
+  return get(`/admin/incidents/${id}`);
+}
+
+export async function createIncident(data: Partial<Incident>): Promise<Incident> {
+  return post('/admin/incidents', data);
+}
+
+export async function updateIncident(id: string, data: Partial<Incident>): Promise<Incident> {
+  return patch(`/admin/incidents/${id}`, data);
+}
+
+export async function addIncidentTimelineEvent(id: string, event: Omit<IncidentTimelineEvent, 'id'>): Promise<IncidentTimelineEvent> {
+  return post(`/admin/incidents/${id}/timeline`, event);
+}
+
+export async function listSupportTickets(status?: string, priority?: string): Promise<SupportTicket[]> {
+  return get('/admin/support-tickets', { params: { status, priority } });
+}
+
+export async function getSupportTicket(id: string): Promise<SupportTicket> {
+  return get(`/admin/support-tickets/${id}`);
+}
+
+export async function createSupportTicket(data: Partial<SupportTicket>): Promise<SupportTicket> {
+  return post('/admin/support-tickets', data);
+}
+
+export async function updateSupportTicket(id: string, data: Partial<SupportTicket>): Promise<SupportTicket> {
+  return patch(`/admin/support-tickets/${id}`, data);
+}
+
+export async function addTicketMessage(id: string, message: Omit<SupportTicketMessage, 'id'>): Promise<SupportTicketMessage> {
+  return post(`/admin/support-tickets/${id}/messages`, message);
+}
+
+export async function assignTicket(id: string, assignee: string): Promise<SupportTicket> {
+  return patch(`/admin/support-tickets/${id}/assign`, { assignee });
+}
+
+export async function escalateTicket(id: string, reason: string): Promise<SupportTicket> {
+  return post(`/admin/support-tickets/${id}/escalate`, { reason });
+}
+
+// ─── System Health API ─────────────────────────────────────────────
+
+export async function getApiHealth(): Promise<ApiHealthStatus[]> {
+  return get('/admin/health/api');
+}
+
+export async function getProviderHealth(): Promise<ProviderHealth[]> {
+  return get('/admin/health/providers');
+}
+
+export async function getSmsRouteHealth(): Promise<SmsRouteHealth[]> {
+  return get('/admin/health/sms-routes');
+}
+
+export async function getDatabaseHealth(): Promise<DatabaseHealth[]> {
+  return get('/admin/health/database');
+}
+
+export async function getErrorRateHistory(hours = 24): Promise<{ timestamp: string; errorRate: number; requestCount: number }[]> {
+  return get('/admin/health/error-rates', { params: { hours } });
 }
 
 // ─── Auth API ──────────────────────────────────────────────────────

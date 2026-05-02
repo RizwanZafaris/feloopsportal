@@ -1,3 +1,91 @@
+// ─── Incident & Support Types ──────────────────────────────────────
+
+export interface Incident {
+  id: string;
+  title: string;
+  description: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  status: 'open' | 'investigating' | 'mitigated' | 'resolved' | 'closed';
+  assignee: string | null;
+  reporter: string;
+  affectedServices: string[];
+  createdAt: string;
+  updatedAt: string;
+  resolvedAt: string | null;
+  timeline: IncidentTimelineEvent[];
+}
+
+export interface IncidentTimelineEvent {
+  id: string;
+  timestamp: string;
+  actor: string;
+  actorType: 'admin' | 'system' | 'automation';
+  event: string;
+  details: string | null;
+}
+
+export interface SupportTicket {
+  id: string;
+  userId: string;
+  userEmail: string;
+  userName: string;
+  subject: string;
+  description: string;
+  status: 'open' | 'pending' | 'resolved' | 'closed' | 'escalated';
+  priority: 'urgent' | 'high' | 'normal' | 'low';
+  category: string;
+  assignee: string | null;
+  createdAt: string;
+  updatedAt: string;
+  resolvedAt: string | null;
+  messages: SupportTicketMessage[];
+}
+
+export interface SupportTicketMessage {
+  id: string;
+  sender: 'user' | 'agent' | 'system';
+  senderName: string;
+  content: string;
+  createdAt: string;
+}
+
+export interface ProviderHealth {
+  id: string;
+  name: string;
+  status: 'healthy' | 'degraded' | 'down' | 'maintenance';
+  corridor: string;
+  latencyMs: number;
+  errorRate: number;
+  lastCheckedAt: string;
+}
+
+export interface ApiHealthStatus {
+  endpoint: string;
+  status: 'healthy' | 'degraded' | 'down';
+  latencyMs: number;
+  uptimePercent: number;
+  lastErrorAt: string | null;
+}
+
+export interface SmsRouteHealth {
+  routeId: string;
+  bankName: string;
+  status: 'healthy' | 'degraded' | 'down';
+  successRate: number;
+  avgLatencyMs: number;
+  lastMessageAt: string | null;
+}
+
+export interface DatabaseHealth {
+  name: string;
+  status: 'healthy' | 'degraded' | 'down';
+  connectionPool: number;
+  activeConnections: number;
+  maxConnections: number;
+  slowQueries: number;
+  replicationLagMs: number | null;
+}
+
 // ─── Core User Types ───────────────────────────────────────────────
 
 export interface AdminUser {

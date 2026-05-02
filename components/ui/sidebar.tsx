@@ -29,6 +29,8 @@ import {
   FileText,
   ChevronDown,
   ChevronUp,
+  AlertTriangle,
+  Activity,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -48,6 +50,8 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   Settings: <Settings className="h-4 w-4" />,
   Landmark: <Landmark className="h-4 w-4" />,
   FileText: <FileText className="h-4 w-4" />,
+  AlertTriangle: <AlertTriangle className="h-4 w-4" />,
+  Activity: <Activity className="h-4 w-4" />,
 };
 
 interface NavSection {
@@ -71,6 +75,14 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       { label: 'Users', href: '/users', icon: 'Users', permission: 'users:read' },
       { label: 'Traceability', href: '/traceability', icon: 'Search', permission: 'audit:read' },
+    ],
+  },
+  {
+    title: 'Operations',
+    items: [
+      { label: 'Incidents', href: '/incidents', icon: 'AlertTriangle', permission: 'audit:read' },
+      { label: 'Support Tickets', href: '/support-tickets', icon: 'MessageSquare', permission: 'users:read' },
+      { label: 'System Health', href: '/system-health', icon: 'Activity', permission: 'audit:read' },
     ],
   },
   {
