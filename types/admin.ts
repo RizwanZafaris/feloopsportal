@@ -519,6 +519,39 @@ export interface FlagTargeting {
   userIds: string[] | null;
 }
 
+// ─── Launch Readiness ──────────────────────────────────────────────
+
+export type LaunchReadinessStatus = 'pending' | 'in_progress' | 'done' | 'blocked';
+
+export interface LaunchReadinessItem {
+  id: number;
+  key: string;
+  category: string;
+  title: string;
+  description: string | null;
+  owner: string | null;
+  status: LaunchReadinessStatus;
+  blocking: boolean;
+  rotationDueAt: string | null;
+  rotationPeriodDays: number | null;
+  checkedBy: string | null;
+  checkedAt: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LaunchReadinessSummary {
+  breakdown: Array<{
+    category: string;
+    status: LaunchReadinessStatus;
+    blocking: boolean;
+    count: number;
+  }>;
+  blockingPending: number;
+  readyToLaunch: boolean;
+}
+
 // ─── Approval & Audit Types ────────────────────────────────────────
 
 export interface TwoPersonApproval {

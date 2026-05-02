@@ -40,6 +40,9 @@ import type {
   ApiHealthStatus,
   SmsRouteHealth,
   DatabaseHealth,
+  LaunchReadinessItem,
+  LaunchReadinessStatus,
+  LaunchReadinessSummary,
 } from '@/types/admin';
 
 // ─── Axios Instance ────────────────────────────────────────────────
@@ -631,4 +634,32 @@ export async function submitApproval(approvalId: string, notes: string): Promise
 
 export async function rejectApproval(approvalId: string, reason: string): Promise<TwoPersonApproval> {
   return post(`/admin/approvals/${approvalId}/reject`, { reason });
+}
+
+// ─── Launch Readiness API ──────────────────────────────────────────
+
+export async function listLaunchReadinessItems(filters: {
+  category?: string;
+  status?: string;
+  blocking?: boolean;
+} = {}): Promise<LaunchReadinessItem[]> {
+  return get('/admin/launch-readiness/items', {
+    params: {
+      category: filters.category,
+      status: filters.status,
+      blocking: filters.blocking === undefined ? undefined : String(filters.blocking),
+    },
+  });
+}
+
+export async function getLaunchReadinessSummary(): Promise<LaunchReadinessSummary> {
+  return get('/admin/launch-readiness/summary');
+}
+
+export async function updateLaunchReadinessStatus(
+  id: number,
+  status: LaunchReadinessStatus,
+  notes?: string,
+): Promise<LaunchReadinessItem> {
+  return patch(`/admin/launch-readiness/items/${id}/status`, { status, notes });
 }

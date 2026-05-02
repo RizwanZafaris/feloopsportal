@@ -123,6 +123,7 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Analytics', href: '/analytics', icon: 'BarChart3', permission: 'analytics:read' },
       { label: 'Audit Log', href: '/audit-viewer', icon: 'ClipboardList', permission: 'audit:read' },
       { label: 'Feature Flags', href: '/feature-flags', icon: 'ToggleLeft', permission: 'feature_flags:read' },
+      { label: 'Launch Readiness', href: '/launch-readiness', icon: 'Rocket', permission: 'audit:read' },
     ],
   },
 ];
