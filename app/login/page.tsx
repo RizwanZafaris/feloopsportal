@@ -115,7 +115,7 @@ export default function LoginPage() {
               {mode === 'login' ? 'Authenticate with Passkey' : 'Register Passkey'}
             </Button>
 
-            {mode === 'login' && (
+            {mode === 'login' && process.env.NODE_ENV !== 'production' && (
               <Button
                 variant="outline"
                 className="w-full"
